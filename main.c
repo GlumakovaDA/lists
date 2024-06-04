@@ -8,42 +8,52 @@
 int main()
 {
     list **lists = (list **)malloc(MAX_LISTS * sizeof(list *));
-    list *current_list = NULL;
-
     int num_lists = 0;
-    int choice;
-    int list_index;
-    int value;
+    int current_list_index = -1;
 
-
-    while (1)
+    while(1)
     {
-        printf("1. Create new list\n2. Select list\n3. Create copy\n4. Delete the list\n5. Add after\n6. Add before\n7. Delete current\n8. Go next\n");
-        printf("9. Go prev\n10. Print current\n11. Print the list\n12. Exit\n");
+        if (num_lists >= MAX_LISTS)
+        {
+            printf("Maximum number of lists reached (%d).\n", MAX_LISTS);
+            break;
+        }
+
+        printf("1. Create new list\n");
+        printf("2. Select list\n");
+        printf("3. Create copy\n");
+        printf("4. Delete the list\n");
+        printf("5. Add after\n");
+        printf("6. Add before\n");
+        printf("7. Delete current\n");
+        printf("8. Go next\n");
+        printf("9. Go prev\n");
+        printf("10. Print current\n");
+        printf("11. Print the list\n");
+        printf("12. Exit\n");
+
+        int choice;
         printf("Enter your choice: ");
         scanf("%d", &choice);
+        int list_index, element;
 
-        switch (choice)
+        switch(choice)
         {
             case 1:
-                if (num_lists < MAX_LISTS)
+                lists[num_lists] = create();
+                if (current_list_index == -1)
                 {
-                    lists[num_lists] = create();
-                    current_list = lists[num_lists];
-                    printf("New list created at index %d.\n", num_lists);
-                    num_lists++;
+                    current_list_index = num_lists;
                 }
-                else
-                {
-                    printf("Maximum number of lists reached (%d).\n", MAX_LISTS);
-                }
+                printf("New list created at index %d.\n", num_lists);
+                num_lists++;
                 break;
             case 2:
                 printf("Enter the index of the list to select: ");
                 scanf("%d", &list_index);
                 if (list_index >= 0 && list_index < num_lists)
                 {
-                    current_list = lists[list_index];
+                    current_list_index = list_index;
                 }
                 else
                 {
@@ -51,69 +61,121 @@ int main()
                 }
                 break;
             case 3:
-                lists[num_lists] = create_copy(current_list);
-                current_list = lists[num_lists];
-                printf("Copy of the current list created at index %d.\n", num_lists);
-                num_lists++;
+                if (current_list_index != -1)
+                {
+                    lists[num_lists] = create_copy(lists[current_list_index]);
+                    current_list_index = num_lists;
+                    printf("Copy of the current list created at index %d.\n", num_lists);
+                    num_lists++;
+
+                }
+                else
+                {
+                    printf("No list selected.\n");
+                }
                 break;
             case 4:
-                list_free(current_list);
-                printf("List deleted.\n");
-                break;
+                if (current_list_index != -1)
+                {
+                    list_free(lists[current_list_index]);
+                    for (int i = current_list_index; i < num_lists - 1; i++)
+                    {
+                        lists[i] = lists[i + 1];
+                    }
+                    num_lists--;
+                    current_list_index = -1;
+                    printf("List deleted.\n");
 
+                }
+                else
+                {
+                    printf("No list selected.\n");
+                }
+                break;
             case 5:
-                printf("Enter value to add after: ");
-                scanf("%d", &value);
-                current_list = add_after(current_list, value);
-                printf("\n");
+                if (current_list_index != -1)
+                {
+                    printf("Enter value to add after: ");
+                    scanf("%d", &element);
+                    lists[current_list_index] = add_after(lists[current_list_index], element);
+                }
+                else
+                {
+                    printf("No list selected.\n");
+                }
                 break;
-
             case 6:
-                printf("Enter value to add before: ");
-                scanf("%d", &value);
-                current_list = add_before(current_list, value);
-                printf("\n");
+                if (current_list_index != -1)
+                {
+                    printf("Enter value to add before: ");
+                    scanf("%d", &element);
+                    lists[current_list_index] = add_before(lists[current_list_index], element);
+                }
+                else
+                {
+                    printf("No list selected.\n");
+                }
                 break;
-
             case 7:
-                current_list = elem_delete(current_list);
-                printf("\n");
-
+                if (current_list_index != -1)
+                {
+                    lists[current_list_index] = elem_delete(lists[current_list_index]);
+                }
+                else
+                {
+                    printf("No list selected.\n");
+                }
                 break;
             case 8:
-                current_list = move_next(current_list);
-                printf("\n");
-
+                if (current_list_index != -1)
+                {
+                    lists[current_list_index] = move_next(lists[current_list_index]);
+                }
+                else
+                {
+                    printf("No list selected.\n");
+                }
                 break;
             case 9:
-                current_list = move_prev(current_list);
-                printf("\n");
-
+                if (current_list_index != -1)
+                {
+                    lists[current_list_index] = move_prev(lists[current_list_index]);
+                }
+                else
+                {
+                    printf("No list selected.\n");
+                }
                 break;
             case 10:
-                printf("Current value: %d\n", print_elem(current_list));
-                printf("\n");
-
+                if (current_list_index != -1)
+                {
+                    printf("Current value: %d\n", print_elem(lists[current_list_index]));
+                }
+                else
+                {
+                    printf("No list selected.\n");
+                }
                 break;
             case 11:
-                print_list(current_list);
-                printf("\n");
-
+                if (current_list_index != -1)
+                {
+                    printf("List elements:\n");
+                    print_list(lists[current_list_index]);
+                }
+                else
+                {
+                    printf("No list selected.\n");
+                }
                 break;
             case 12:
-                 for (int i = 0; i < num_lists; i++)
+                for(int i = 0; i < num_lists; i++)
                 {
                     list_free(lists[i]);
                 }
-                free(lists);
-                printf("Exiting program.\n");
                 return 0;
             default:
                 printf("Invalid choice\n");
-                printf("\n");
-
         }
     }
-
     return 0;
 }

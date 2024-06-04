@@ -17,20 +17,21 @@ list* create()
     return a;
 }
 
+
 list* create_copy(list* a)
 {
-    list* b = malloc(sizeof(list));
-    list* st = b;
-    b -> num = a -> num;
-    b -> flag = a -> flag;
-    list* d = a;
-    d = a->next;
+    list* b=malloc(sizeof(list));
+    list* st=b;
+    b->num=a->num;
+    b->flag=a->flag;
+    list* d=a;
+    d=a->next;
     while(d!=a)
     {
-        list* e = malloc(sizeof(list));
-        e->num = d->num;
-        e->flag = d->flag;
-        b->next = e;
+        list* e=malloc(sizeof(list));
+        e->num=d->num;
+        e->flag=d->flag;
+        b->next=e;
         e->prev=b;
         b=e;
         d=d->next;
